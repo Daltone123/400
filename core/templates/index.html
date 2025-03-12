@@ -147,7 +147,7 @@
         <!-- Call-to-Action Button -->
         <div class="mt-8 flex justify-center md:justify-start animate-fade-in-up">
           <a
-            href="{% url 'upload' %}"
+            href="{% if user.is_authenticated %} {% url 'upload' %} {% else %} {% url 'login' %} {% endif %}"
             class="bg-gradient-to-r from-pink-500 to-green-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg 
                    transform hover:scale-110 transition-transform duration-300 flex items-center space-x-2"
           >
@@ -163,7 +163,9 @@
             >
               <path d="M5 12h14m-7-7v14" />
             </svg>
-            <span>Get Started</span>
+            <span>
+              Get Started
+            </span>
           </a>
         </div>
       </div>

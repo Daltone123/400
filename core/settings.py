@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import pymysql
+pymysql.install_as_MySQLdb()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -91,3 +93,16 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 DEBUG = True
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "dira",
+        'USER': "root",
+        'PASSWORD': "!20Dalton20!",
+        'HOST': "localhost",
+        'PORT': "3306",
+    }
+}
+
+
