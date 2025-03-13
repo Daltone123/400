@@ -10,16 +10,18 @@
 <body class="bg-cover bg-center bg-no-repeat" style="background-image: url('/static/images/potatoe.jpg'); font-family: 'Arial', sans-serif;">
     <nav class="bg-green-900 p-4 text-white">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Dira Farm</h1>
+          <h1 class="text-2xl font-bold">
+            <a href="{% url 'home' %}" class="hover:text-gray-300">Dira Farm</a>
+        </h1>        
             <button id="menu-toggle" class="md:hidden text-white focus:outline-none">
                 &#9776;
             </button>
             <ul id="nav-menu" class="hidden md:flex space-x-6">
-                <li><a href="#about" class="hover:text-gray-300"></a></li>
-                <li><a href="#about" class="hover:text-gray-300">About</a></li>
-                <li><a href="#faq" class="hover:text-gray-300">FAQs</a></li>
-                <li><a href="#contact" class="hover:text-gray-300">Contacts</a></li>
-            </ul>
+              <li><a href="{% url 'home' %}#features" class="hover:text-gray-300">Features</a></li>
+              <li><a href="{% url 'home' %}#about" class="hover:text-gray-300">About</a></li>
+              <li><a href="{% url 'home' %}#faqs" class="hover:text-gray-300">FAQs</a></li>
+              <li><a href="{% url 'home' %}#contact" class="hover:text-gray-300">Contacts</a></li>
+          </ul>                   
         </div>
     </nav>
     <section class="flex flex-col items-center justify-center">
