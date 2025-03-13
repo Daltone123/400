@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farmer Dashboard - Dira Farm</title>
+    <link rel="stylesheet" href="{% static 'css/farmer_dashboard.css' %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <h2>Dira Farm</h2>
+        <ul>
+            <li><a href="#profile">Profile</a></li>
+            <li><a href="#insights">Insights</a></li>
+            <li><a href="#activity">Activity History</a></li>
+            <li><a href="#resources">Resources</a></li>
+            <li><a href="{% url 'home' %}" class="logout-btn">Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Dashboard -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="profile-section">
+                <img src="{% static 'images/profile.png' %}" alt="Profile Picture" />
+                <div>
+                    <h3>Welcome, {{ user.name }}</h3>
+                    <p>Farmer in {{ user.location }}</p>
+                </div>
+            </div>
+            <button class="settings-btn">⚙️</button>
+        </header>
+
+        <!-- Insights Section -->
+        <section id="insights">
+            <h2>Farm Insights</h2>
+            <div class="insight-cards">
+                <div class="card">
+                    <h3>Total Diagnoses</h3>
+                    <p>{{ total_diagnoses }}</p>
+                </div>
+                <div class="card">
+                    <h3>Successful Treatments</h3>
+                    <p>{{ successful_treatments }}</p>
+                </div>
+                <div class="card">
+                    <h3>Current Farm Status</h3>
+                    <p>{{ farm_status }}</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="diseaseChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Activity History Section -->
+        <section id="activity">
+            <h2>Activity History</h2>
+            <ul>
+                {% for activity in activity_history %}
+                <li>
+                    <span>{{ activity.date }}</span>
+                    <p>{{ activity.diagnosis }} – {{ activity.recommendation }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources">
+            <h2>Educational Resources</h2>
+            <ul>
+                {% for resource in resources %}
+                <li>
+                    <a href="{{ resource.link }}" target="_blank">{{ resource.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+
+    <script src="{% static 'js/farmer_dashboard.js' %}"></script>
+</body>
+</html>
