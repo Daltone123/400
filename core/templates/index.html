@@ -82,13 +82,8 @@
           </button>
           <ul class="dropdown-menu">
             {% if user.is_authenticated %}
-                {% if user.user_type == 'farmer' %}
-                    <li><a class="dropdown-item" href="{% url 'farmer_dashboard' %}">Account</a></li>
-                {% elif user.user_type == 'agrovet' %}
-                    <li><a class="dropdown-item" href="{% url 'agrovet_dashboard' %}">Account</a></li>
-                {% elif user.user_type == 'admin' %}
-                    <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">Account</a></li>
-                {% endif %}
+                <li><a class="dropdown-item" href="/dashboard">Account</a></li>
+
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Sign Out</a></li>
             {% else %}
                 <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>

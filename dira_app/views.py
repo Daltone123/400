@@ -10,14 +10,34 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from . import auth
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from PIL import Image
+from io import BytesIO
 
-
-FASTAPI_URL = "http://127.0.0.1:7000/upload"  # ✅ Update with the correct FastAPI URL
+FASTAPI_URL = "http://127.0.0.1:8000/upload"  # ✅ Update with the correct FastAPI URL
 
 def home(request):
     user = request.user
     return render(request, "index.html", {"user": user})    
 
+@login_required(login_url='/login')
+def dashboard_view(request):
+    user = request.user
+    is_farmer = auth.is_farmer(user)
+    is_agrovet = auth.is_agrovet(user)
+
+    template = None
+
+    if is_farmer:
+        template = "farmer_dashboard.html"
+    elif is_agrovet:
+        template = "agrovet_dashboard.html"
+
+    if not template:
+        return HttpResponse("Something went wrong!")
+    
+    return render(request, template, {"user": user})
 def login_view(request):
 
     if request.method == "GET":
@@ -169,10 +189,32 @@ def fastapi_proxy(request):
             return JsonResponse({"error": "No file uploaded"}, status=400)
 
         try:
-            response = requests.post(FASTAPI_URL, files={"file": (file.name, file.read())})
-            return JsonResponse(response.json(), safe=False)
+            # response = requests.post(url=FASTAPI_URL, files={"file": (file.name, file.read())})
+            # return JsonResponse(response.json(), safe=False)
+            #image = file.read()
+            # Read the image file and convert it to a NumPy array
+            image = Image.open(file)  # Open image using PIL
+            image = image.convert("RGB")  # Ensure it's in RGB mode
+            img_array = np.array(image)  # Convert to NumPy array
+            img_batch = np.expand_dims(img_array, axis=0)
+
+            predictions = MODEL.predict(img_batch)
+
+            predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
+            confidence = float(np.max(predictions[0]))
+
+            print(f"Prediction: {predicted_class}, Confidence: {confidence:.2f}")
+
+            return JsonResponse({
+                "class": predicted_class,
+                "confidence": round((confidence*100), 1)
+            }, status=200) 
         except requests.RequestException as e:
+            print(f"Failed to connect to FastAPI: {str(e)}")
             return JsonResponse({"error": f"Failed to connect to FastAPI: {str(e)}"}, status=500)
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)  # 405: Method Not Allowed
 

@@ -2,9 +2,15 @@ from django.contrib.auth  import login, logout, authenticate
 from django.contrib.auth.models import User, Group
 from . import models
 
+def is_agrovet(user):
+  return user.groups.filter(name="agrovet").exists()
+
+def is_farmer(user):
+  return user.groups.filter(name="farmer").exists()
+
 def create_group(group_name):
   try:
-    group, _ = Group.objects.create(name=group_name)
+    group, _ = Group.objects.get_or_create(name=group_name)
     return True, group
   except Exception as e:
     return False, {
@@ -19,8 +25,8 @@ def add_user_to_group(user, group_name):
       return False, group
     
     group.user_set.add(user)
-
-    return True
+    print("User added to group")
+    return True, None
   except Exception as e:
     print(f"Error: {e}")
     return False, {
@@ -35,7 +41,6 @@ def login_fn(request, email=None, password=None):
       "message":"Email, password required",
       "status": 401
     }
-  print(f"Password {password}")
   try:
     user = authenticate( request,username=email, password=password)
 
@@ -123,7 +128,7 @@ def register_farmer(farmer_data={}):
     new_farmer = models.Farmer.objects.create(
       first_name=first_name,
       last_name=last_name,
-      profile=user,
+      user=user,
       email=email,
       phone_number=phone_number,
       farm_location={},
@@ -174,7 +179,7 @@ def register_agrovet(data={}):
     new_agrovet = models.Agrovet.objects.create(
       first_name=first_name,
       last_name=last_name,
-      profile=user,
+      user=user,
       email=email,
       phone_number=phone_number,
       agrovet_location={},

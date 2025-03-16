@@ -1,38 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-# Extend Django's default User model
-class CustomUser(AbstractUser):
-    USER_TYPE_CHOICES = (
-        ('farmer', 'Farmer'),
-        ('agrovet', 'Agrovet'),
-        ('admin', 'Admin'),
-    )
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES)
-
-    # Add related_name to avoid conflicts
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='customuser_set',
-        blank=True,
-        help_text="The groups this user belongs to.",
-        verbose_name='groups'
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='customuser_set',
-        blank=True,
-        help_text="Specific permissions for this user.",
-        verbose_name='user permissions'
-    )
-
-    def __str__(self):
-        return self.username
-
+from django.contrib.auth.models import AbstractUser, User
 
 # Farmer model linked to CustomUser
 class Farmer(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="farmer_profile")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="farmer_profile",null=True, default=None)
     first_name = models.CharField(max_length=100, blank=False, null=False)
     last_name = models.CharField(max_length=100, blank=False, null=False)
     email = models.CharField(max_length=100, blank=False, null=False, unique=True)
@@ -47,7 +18,7 @@ class Farmer(models.Model):
 
 # Agrovet model linked to CustomUser
 class Agrovet(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="agrovet_profile")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="agrovet_profile", null=True, default=None)
     first_name = models.CharField(max_length=100, blank=False, null=False)
     last_name = models.CharField(max_length=100, blank=False, null=False)
     email = models.CharField(max_length=100, blank=False, null=False, unique=True)
