@@ -4,7 +4,8 @@ from .model_loader import MODEL, CLASS_NAMES  # ✅ Import model from model_load
 import numpy as np
 import os
 import requests
-from tensorflow.keras.preprocessing import image
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -206,3 +207,23 @@ def predict_view(request):
             return JsonResponse({"error": str(e)}, status=500)  # ✅ Catch exceptions
 
     return JsonResponse({"error": "Invalid request method"}, status=405)  # ✅ Return proper status code
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
+
+def agrovet_dashboard(request):
+    if request.user.is_authenticated and request.user.is_agrovet:
+        agrovet = request.user.agrovet_profile
+        products = agrovet.products.all()
+        orders = agrovet.orders.all()
+        context = {
+            'agrovet': agrovet,
+            'products': products,
+            'orders': orders
+        }
+        return render(request, 'agrovet_dashboard.html', context)
+    else:
+        return redirect('login')

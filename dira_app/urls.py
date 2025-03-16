@@ -12,4 +12,7 @@ urlpatterns = [
     path("login", views.login_view, name="login"),
     path("signup_f", views.signup_f_view, name="signup_f"),
     path("signup_a", views.signup_a_view, name="signup_a"),
+    path('logout', views.logout_view, name='logout'),
+    path('agrovet-dashboard/', views.agrovet_dashboard, name='agrovet_dashboard'),
+
 ]

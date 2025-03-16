@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agrovet Dashboard - Dira Farm</title>
+    <link rel="stylesheet" href="{% static 'css/agrovet_dashboard.css' %}" />
+</head>
+<body>
+    <!-- ✅ Sidebar Navigation -->
+    <aside class="sidebar">
+        <h2>Dira Farm</h2>
+        <ul>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#orders">Orders</a></li>
+            <li><a href="{% url 'home' %}" class="logout-btn">Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- ✅ Main Dashboard -->
+    <div class="main-content">
+        <!-- ✅ Header -->
+        <header>
+            <div class="profile-section">
+                <img src="{% static 'images/profile.png' %}" alt="Profile Picture" />
+                <div>
+                    <h3>Welcome, {{ user.name }}</h3>
+                    <p>Agrovet in {{ user.location }}</p>
+                </div>
+            </div>
+            <button class="settings-btn">⚙️</button>
+        </header>
+
+        <!-- ✅ Product Management Section -->
+        <section id="products">
+            <h2>Manage Products</h2>
+            <form id="addProductForm">
+                <input type="text" id="productName" placeholder="Product Name" required />
+                <input type="text" id="productDescription" placeholder="Description" required />
+                <input type="number" id="productPrice" placeholder="Price" required />
+                <input type="number" id="productStock" placeholder="Stock Quantity" required />
+                <button type="submit">Add Product</button>
+            </form>
+
+            <div class="product-list">
+                {% for product in products %}
+                <div class="product-item" data-id="{{ product.id }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description }}</p>
+                    <p>Price: KES {{ product.price }}</p>
+                    <p>Stock: {{ product.stock_quantity }}</p>
+                    <button class="edit-btn" onclick="editProduct({{ product.id }})">Edit</button>
+                    <button class="delete-btn" onclick="deleteProduct({{ product.id }})">Delete</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ✅ Order Management Section -->
+        <section id="orders">
+            <h2>Orders</h2>
+            <div class="order-list">
+                {% for order in orders %}
+                <div class="order-item">
+                    <h3>{{ order.product.name }}</h3>
+                    <p>Farmer: {{ order.farmer.user.username }}</p>
+                    <p>Quantity: {{ order.quantity }}</p>
+                    <p>Total Price: KES {{ order.total_price }}</p>
+                    <p>Status: {{ order.status }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <script src="{% static 'js/agrovet_dashboard.js' %}"></script>
+</body>
+</html>
