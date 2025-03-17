@@ -5,75 +5,85 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agrovet Dashboard - Dira Farm</title>
-    <link rel="stylesheet" href="{% static 'css/agrovet_dashboard.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/farmer_dashboard.css' %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- ✅ Sidebar Navigation -->
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
         <h2>Dira Farm</h2>
         <ul>
-            <li><a href="#products">Products</a></li>
-            <li><a href="#orders">Orders</a></li>
+            <li><a href="#profile">Profile</a></li>
+            <li><a href="#insights">Insights</a></li>
+            <li><a href="#activity">Activity History</a></li>
+            <li><a href="#resources">Resources</a></li>
             <li><a href="{% url 'home' %}" class="logout-btn">Logout</a></li>
         </ul>
     </aside>
 
-    <!-- ✅ Main Dashboard -->
+    <!-- Main Dashboard -->
     <div class="main-content">
-        <!-- ✅ Header -->
+        <!-- Header -->
         <header>
             <div class="profile-section">
-                <img src="{% static 'images/profile.png' %}" alt="Profile Picture" />
+                
+              <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486" alt="user" width="30" height="30" class="rounded-circle">
                 <div>
                     <h3>Welcome, {{ user.name }}</h3>
-                    <p>Agrovet in {{ user.location }}</p>
+                    <p>Agrovet {{ user.location }}</p>
                 </div>
             </div>
             <button class="settings-btn">⚙️</button>
         </header>
 
-        <!-- ✅ Product Management Section -->
-        <section id="products">
-            <h2>Manage Products</h2>
-            <form id="addProductForm">
-                <input type="text" id="productName" placeholder="Product Name" required />
-                <input type="text" id="productDescription" placeholder="Description" required />
-                <input type="number" id="productPrice" placeholder="Price" required />
-                <input type="number" id="productStock" placeholder="Stock Quantity" required />
-                <button type="submit">Add Product</button>
-            </form>
-
-            <div class="product-list">
-                {% for product in products %}
-                <div class="product-item" data-id="{{ product.id }}">
-                    <h3>{{ product.name }}</h3>
-                    <p>{{ product.description }}</p>
-                    <p>Price: KES {{ product.price }}</p>
-                    <p>Stock: {{ product.stock_quantity }}</p>
-                    <button class="edit-btn" onclick="editProduct({{ product.id }})">Edit</button>
-                    <button class="delete-btn" onclick="deleteProduct({{ product.id }})">Delete</button>
+        <!-- Insights Section -->
+        <section id="insights">
+            <h2>Farm Insights</h2>
+            <div class="insight-cards">
+                <div class="card">
+                    <h3>Total Diagnoses</h3>
+                    <p>{{ total_diagnoses }}</p>
                 </div>
-                {% endfor %}
+                <div class="card">
+                    <h3>Successful Treatments</h3>
+                    <p>{{ successful_treatments }}</p>
+                </div>
+                <div class="card">
+                    <h3>Current Farm Status</h3>
+                    <p>{{ farm_status }}</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="diseaseChart"></canvas>
             </div>
         </section>
 
-        <!-- ✅ Order Management Section -->
-        <section id="orders">
-            <h2>Orders</h2>
-            <div class="order-list">
-                {% for order in orders %}
-                <div class="order-item">
-                    <h3>{{ order.product.name }}</h3>
-                    <p>Farmer: {{ order.farmer.user.username }}</p>
-                    <p>Quantity: {{ order.quantity }}</p>
-                    <p>Total Price: KES {{ order.total_price }}</p>
-                    <p>Status: {{ order.status }}</p>
-                </div>
+        <!-- Activity History Section -->
+        <section id="activity">
+            <h2>Activity History</h2>
+            <ul>
+                {% for activity in activity_history %}
+                <li>
+                    <span>{{ activity.date }}</span>
+                    <p>{{ activity.diagnosis }} – {{ activity.recommendation }}</p>
+                </li>
                 {% endfor %}
-            </div>
+            </ul>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources">
+            <h2>Educational Resources</h2>
+            <ul>
+                {% for resource in resources %}
+                <li>
+                    <a href="{{ resource.link }}" target="_blank">{{ resource.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
         </section>
     </div>
 
-    <script src="{% static 'js/agrovet_dashboard.js' %}"></script>
+    <script src="{% static 'js/farmer_dashboard.js' %}"></script>
 </body>
 </html>

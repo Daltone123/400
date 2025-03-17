@@ -14,6 +14,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from PIL import Image
 from io import BytesIO
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.auth.models import User
+from .models import Diagnosis, Treatment, Resource
+
 
 FASTAPI_URL = "http://127.0.0.1:8000/upload"  # ✅ Update with the correct FastAPI URL
 
@@ -269,3 +274,51 @@ def agrovet_dashboard(request):
         return render(request, 'agrovet_dashboard.html', context)
     else:
         return redirect('login')
+
+
+#Report view
+def download_report(request):
+    if not request.user.is_authenticated:
+        return HttpResponse("Unauthorized", status=401)
+
+    # Get real data from the database based on the logged-in user
+    total_diagnoses = Diagnosis.objects.filter(user=request.user).count()
+    successful_treatments = Treatment.objects.filter(user=request.user, status='successful').count()
+
+    # Latest farm status based on the most recent diagnosis (if available)
+    latest_diagnosis = Diagnosis.objects.filter(user=request.user).order_by('-date').first()
+    farm_status = latest_diagnosis.status if latest_diagnosis else 'Unknown'
+
+    # Activity history: Fetch farmer’s diagnosis and treatment history
+    activity_history = Diagnosis.objects.filter(user=request.user).order_by('-date').values(
+        'date', 'disease_detected', 'recommendation'
+    )[:10]  # Limit to last 10 entries
+
+    # Resources linked to the farmer's profile or general farming resources
+    resources = Resource.objects.filter(user=request.user) | Resource.objects.filter(is_global=True)
+
+    # Create context with real data
+    context = {
+        'user': request.user,
+        'total_diagnoses': total_diagnoses,
+        'successful_treatments': successful_treatments,
+        'farm_status': farm_status,
+        'activity_history': activity_history,
+        'resources': resources
+    }
+    
+    # Create PDF response
+    template_path = 'farmer_report_template.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="farm_report.pdf"'
+    
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    # Generate PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    
+    return response

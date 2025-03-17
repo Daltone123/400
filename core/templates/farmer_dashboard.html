@@ -26,7 +26,8 @@
         <!-- Header -->
         <header>
             <div class="profile-section">
-                <img src="{% static 'images/profile.png' %}" alt="Profile Picture" />
+                
+              <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486" alt="user" width="30" height="30" class="rounded-circle">
                 <div>
                     <h3>Welcome, {{ user.name }}</h3>
                     <p>Farmer in {{ user.location }}</p>
@@ -56,7 +57,6 @@
                 <canvas id="diseaseChart"></canvas>
             </div>
         </section>
-
         <!-- Activity History Section -->
         <section id="activity">
             <h2>Activity History</h2>
@@ -81,6 +81,11 @@
                 {% endfor %}
             </ul>
         </section>
+        <!-- Download report -->
+        <button onclick='window.location.href="{% url "download_report" %}"'>
+            Download Report (PDF)
+        </button>        
+               
     </div>
 
     <script src="{% static 'js/farmer_dashboard.js' %}"></script>

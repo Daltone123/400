@@ -25,7 +25,12 @@
                     <input type="password" id="login-password" name="password" required>
                 </div>
                 <button type="submit" id="login-btn">Login</button>
-                <span><p>Don't have an account? Register</p></span>
+                <span>
+                    <p>
+                        Don't have an account? 
+                        <a href="{% url 'signup_f' %}" style="color: green; text-decoration: none;">Register</a>
+                    </p>
+                </span>                
             </form>
         </div>
 

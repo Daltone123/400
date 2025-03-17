@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Farmer Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+        }
+        h2 {
+            color: #4CAF50;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Farm Report</h2>
+    
+    <!-- Farmer Info -->
+    <div class="section">
+        <h3>Farmer Information</h3>
+        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    <!-- Farm Insights -->
+    <div class="section">
+        <h3>Farm Insights</h3>
+        <div class="card">
+            <strong>Total Diagnoses:</strong> {{ total_diagnoses }}
+        </div>
+        <div class="card">
+            <strong>Successful Treatments:</strong> {{ successful_treatments }}
+        </div>
+        <div class="card">
+            <strong>Current Farm Status:</strong> {{ farm_status }}
+        </div>
+    </div>
+
+    <!-- Activity History -->
+    <div class="section">
+        <h3>Activity History</h3>
+        <ul>
+            {% for activity in activity_history %}
+            <li>
+                <div class="card">
+                    <strong>Date:</strong> {{ activity.date }}<br>
+                    <strong>Diagnosis:</strong> {{ activity.disease_detected }}<br>
+                    <strong>Recommendation:</strong> {{ activity.recommendation }}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Resources -->
+    <div class="section">
+        <h3>Educational Resources</h3>
+        <ul>
+            {% for resource in resources %}
+            <li>
+                <a href="{{ resource.link }}" target="_blank">{{ resource.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

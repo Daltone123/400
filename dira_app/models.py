@@ -31,7 +31,7 @@ class Agrovet(models.Model):
         return self.agrovet_name
 
 
-# ✅ Product Model linked to Agrovet
+# Product Model linked to Agrovet
 class Product(models.Model):
     agrovet = models.ForeignKey(Agrovet, on_delete=models.CASCADE, related_name="products")
     name = models.CharField(max_length=100, blank=False, null=False)
@@ -48,7 +48,7 @@ class Product(models.Model):
         return self.stock_quantity < 10
 
 
-# ✅ Order Model linked to Agrovet and Farmer
+# Order Model linked to Agrovet and Farmer
 class Order(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -66,3 +66,25 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.status}"
+
+#Diagnostic model linked to CustomUser
+class Diagnosis(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    disease_detected = models.CharField(max_length=100)
+    recommendation = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50)  # e.g., 'Healthy', 'Infected', 'Treated'
+
+#Treatment model linked to Diagnosis
+class Treatment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    diagnosis = models.ForeignKey(Diagnosis, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50)  # e.g., 'successful', 'pending', 'failed'
+    date = models.DateTimeField(auto_now_add=True)
+
+#Resource model linked to CustomUser
+class Resource(models.Model):
+    title = models.CharField(max_length=255)
+    link = models.URLField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # Personal resource
+    is_global = models.BooleanField(default=False)  # For general resources available to all farmers
