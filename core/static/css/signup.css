@@ -1,0 +1,118 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+    gap: 20px;
+}
+
+.signup-form-container {
+    flex: 1;
+    max-width: 60%;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: 500px; /* Set a fixed height */
+    display: flex;
+    flex-direction: column;
+}
+
+.scrollable-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    max-height: 450px; /* Ensures scrolling works */
+}
+
+/* Scrollbar Styling */
+.scrollable-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 3px;
+}
+
+/* Image Section */
+.signup-image {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; /* Push the image to the far right */
+    align-items: center;
+}
+
+.signup-image img {
+    width: 100%;
+    max-width: 400px; /* Adjust size */
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* Input Fields */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+#signup-btn {
+    width: 100%;
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#signup-btn:hover {
+    background: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .signup-form-container {
+        max-width: 100%;
+    }
+
+    .signup-image {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .signup-image img {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    .scrollable-container {
+        max-height: 350px; /* Allow scrolling */
+    }
+}

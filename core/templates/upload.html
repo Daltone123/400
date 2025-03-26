@@ -8,6 +8,55 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body class="bg-cover bg-center bg-no-repeat" style="background-image: url('/static/images/potatoe.jpg'); font-family: 'Arial', sans-serif;">
+  <!-- Splash Screen -->
+<div id="splash-screen">
+  <div class="loader"></div>
+</div>
+
+<style>
+  /* Splash Screen Styling */
+  #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+  }
+
+  /* Loader Animation */
+  .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #fff;
+      border-top-color: #00ff00;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+      from {
+          transform: rotate(0deg);
+      }
+      to {
+          transform: rotate(360deg);
+      }
+  }
+
+  /* Show Splash Screen */
+  #splash-screen.show {
+      opacity: 1;
+      visibility: visible;
+  }
+</style>
+<!-- Navigation Bar -->
     <nav class="bg-green-900 p-4 text-white">
         <div class="container mx-auto flex justify-between items-center">
           <h1 class="text-2xl font-bold">
@@ -25,7 +74,6 @@
         </div>
     </nav>
     <section class="flex flex-col items-center justify-center">
-      <div class="bg-white p-10 shadow-2xl rounded-xl w-full max-w-3xl transform transition-all duration-500 hover:scale-105">
           <h2 class="text-4xl font-extrabold mb-6 text-center text-gray-800">Upload an Image</h2>
 
           <!-- Image Upload Area -->
@@ -39,7 +87,6 @@
               </div>
               <input type="file" id="image-upload" class="hidden" accept="image/*">
           </div>
-
           <!-- Buttons -->
 <div class="flex justify-center space-x-4 mt-6">
   <button id="upload-next" class="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-green-600 transition-all duration-300 transform hover:scale-105 flex items-center">
@@ -97,11 +144,11 @@
       </div>
   </div>
 </div>
-
-      </div>
+</div>
   </section>
+  
     <script src="../static/js/app.js"></script>
-    <script>
+   <script>
         document.getElementById("menu-toggle").addEventListener("click", function() {
             document.getElementById("nav-menu").classList.toggle("hidden");
         });
@@ -178,8 +225,9 @@
         alert("An error occurred while diagnosing. Please try again.");
     }
 });
-    </script>
+    </script> 
 
+</body>
 <br><br>
 <footer class="bg-black text-white py-16">
   <div class="container mx-auto px-4">
