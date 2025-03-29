@@ -1,23 +1,71 @@
-// ✅ Add Product
-document.getElementById('addProductForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("addProductForm");
 
-  const name = document.getElementById('productName').value;
-  const description = document.getElementById('productDescription').value;
-  const price = document.getElementById('productPrice').value;
-  const stock = document.getElementById('productStock').value;
+  form.addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-  const response = await fetch('/dashboard/add-product/', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}'
-      },
-      body: JSON.stringify({ name, description, price, stock })
+      const productName = document.getElementById("productName").value.trim();
+      const productDescription = document.getElementById("productDescription").value.trim();
+      const productPrice = document.getElementById("productPrice").value.trim();
+      const productStock = document.getElementById("productStock").value.trim();
+
+      if (!productName || !productDescription || !productPrice || !productStock) {
+          displayMessage("All fields are required!", "error");
+          return;
+      }
+
+      const productData = {
+          name: productName,
+          description: productDescription,
+          price: parseFloat(productPrice),
+          stock_quantity: parseInt(productStock),
+      };
+
+      try {
+          const response = await fetch("/products/", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify(productData),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+              throw new Error(result.error || "Failed to add product");
+          }
+
+          displayMessage("Product added successfully!", "success");
+
+          form.reset();
+
+          setTimeout(() => location.reload(), 1500);
+      } catch (error) {
+          console.error("Error:", error);
+          displayMessage(`${error.message}`, "error");
+      }
   });
 
-  if (response.ok) location.reload();
+  // Function to display messages
+  function displayMessage(message, type) {
+      let messageBox = document.getElementById("messageBox");
+
+      if (!messageBox) {
+          messageBox = document.createElement("div");
+          messageBox.id = "messageBox";
+          document.body.prepend(messageBox);
+      }
+
+      messageBox.textContent = message;
+      messageBox.className = type;
+      setTimeout(() => {
+          messageBox.textContent = "";
+          messageBox.className = "";
+      }, 4000);
+  }
 });
+
 
 // ✅ Delete Product
 async function deleteProduct(productId) {

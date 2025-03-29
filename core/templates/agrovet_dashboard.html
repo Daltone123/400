@@ -36,6 +36,32 @@
         <!-- Product Management Section -->
         <section id="products">
             <h2>Manage Products</h2>
+            <style>
+                #messageBox {
+                    position: fixed;
+                    top: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    text-align: center;
+                    z-index: 1000;
+                }
+            
+                .success {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+            
+                .error {
+                    background-color: #FF5733;
+                    color: white;
+                }
+            </style>
+            
+            <div id="messageBox"></div>
+            
             <form id="addProductForm">
                 <input type="text" id="productName" placeholder="Product Name" required />
                 <input type="text" id="productDescription" placeholder="Description" required />
@@ -43,6 +69,7 @@
                 <input type="number" id="productStock" placeholder="Stock Quantity" required />
                 <button type="submit">Add Product</button>
             </form>
+        
 
             <div class="product-list">
                 {% for product in products %}

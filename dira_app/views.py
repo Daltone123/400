@@ -17,7 +17,9 @@ from io import BytesIO
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.auth.models import User
-from .models import Diagnosis, Treatment, Resource
+from .models import Diagnosis, Treatment, Resource, Farmer, Agrovet, Product
+from collections import Counter
+import json
 
 
 FASTAPI_URL = "http://127.0.0.1:8000/upload"  # ✅ Update with the correct FastAPI URL
@@ -26,23 +28,109 @@ def home(request):
     user = request.user
     return render(request, "index.html", {"user": user})    
 
+def get_farmer_data(user):
+    """Fetches farmer-related data including name, location, diagnosis history, and farm status."""
+    try:
+        farmer = Farmer.objects.get(user=user)
+        farmer_data = {
+            "name": f"{farmer.first_name} {farmer.last_name}",
+            "location": farmer.farm_location if farmer.farm_location else "N/A",
+        }
+
+        # Get last 10 diagnosis history
+        activity_history = Diagnosis.objects.filter(user=user).order_by('-date')[:10]
+        farmer_data["activity_history"] = [
+            {
+                "date": diagnosis.date.strftime("%Y-%m-%d %H:%M:%S"),
+                "diagnosis": diagnosis.disease_detected,
+                "recommendation": diagnosis.recommendation,
+            }
+            for diagnosis in activity_history
+        ]
+
+        farmer_diagnosis = Diagnosis.objects.filter(user=user)
+        farmer_data["farm_status"] = determine_farm_status(farmer_diagnosis)
+        farmer_data["total_diagnoses"] = farmer_diagnosis.count()
+
+        return farmer_data
+    except Farmer.DoesNotExist:
+        return {"error": "Farmer not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+def get_agrovet_data(user):
+    """Fetches agrovet-related data including name, location, and available products."""
+    try:
+        agrovet = Agrovet.objects.get(user=user)
+        agrovet_data = {
+            "name": f"{agrovet.first_name} {agrovet.last_name}",
+            "location": agrovet.agrovet_location if agrovet.agrovet_location else "N/A",
+        }
+
+        products = agrovet.products.all()
+        agrovet_data["products"] = [
+            {
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price": float(product.price),
+                "stock_quantity": product.stock_quantity,
+                "low_stock": product.is_low_stock(),
+            }
+            for product in products
+        ]
+
+        return agrovet_data
+    except Agrovet.DoesNotExist:
+        return {"error": "Agrovet not found", "products": []}
+    except Exception as e:
+        return {"error": str(e)}
+
+def determine_farm_status(diagnoses):
+    """Determines farm health status based on diagnosis records."""
+    disease_counts = Counter(diagnosis.disease_detected for diagnosis in diagnoses)
+    total_diagnoses = sum(disease_counts.values())
+
+    if total_diagnoses == 0:
+        return "No Data Available"
+
+    healthy_count = disease_counts.get("Healthy", 0)
+    early_blight_count = disease_counts.get("Early Blight", 0)
+    late_blight_count = disease_counts.get("Late Blight", 0)
+    diseased_count = early_blight_count + late_blight_count
+
+    if healthy_count > diseased_count:
+        return "Healthy"
+    elif early_blight_count > late_blight_count and early_blight_count >= 0.3 * total_diagnoses:
+        return "Early Blight Detected"
+    elif late_blight_count > early_blight_count and late_blight_count >= 0.3 * total_diagnoses:
+        return "Late Blight Detected"
+    elif diseased_count >= 0.5 * total_diagnoses:
+        return "Poor Health"
+    else:
+        return "Uncertain"
+
 @login_required(login_url='/login')
 def dashboard_view(request):
+    """Handles dashboard view for both farmers and agrovets."""
     user = request.user
     is_farmer = auth.is_farmer(user)
     is_agrovet = auth.is_agrovet(user)
 
-    template = None
+    user_data = {}
 
     if is_farmer:
+        user_data = get_farmer_data(user)
         template = "farmer_dashboard.html"
     elif is_agrovet:
+        user_data = get_agrovet_data(user)
         template = "agrovet_dashboard.html"
-
-    if not template:
+    else:
         return HttpResponse("Something went wrong!")
-    
-    return render(request, template, {"user": user})
+
+    return render(request, template, {"user": user_data})
+
+
 def login_view(request):
 
     if request.method == "GET":
@@ -276,49 +364,76 @@ def agrovet_dashboard(request):
         return redirect('login')
 
 
-#Report view
+# Report View
 def download_report(request):
     if not request.user.is_authenticated:
         return HttpResponse("Unauthorized", status=401)
 
-    # Get real data from the database based on the logged-in user
-    total_diagnoses = Diagnosis.objects.filter(user=request.user).count()
-    successful_treatments = Treatment.objects.filter(user=request.user, status='successful').count()
+    # Check if user is a farmer or an agrovet
+    if auth.is_farmer(request.user):
+        user_data = get_farmer_data(request.user)
+        user_type = "Farmer"
+    elif auth.is_agrovet(request.user):
+        user_data = get_agrovet_data(request.user)
+        user_type = "Agrovet"
+    else:
+        return HttpResponse("User type not recognized", status=400)
 
-    # Latest farm status based on the most recent diagnosis (if available)
-    latest_diagnosis = Diagnosis.objects.filter(user=request.user).order_by('-date').first()
-    farm_status = latest_diagnosis.status if latest_diagnosis else 'Unknown'
-
-    # Activity history: Fetch farmer’s diagnosis and treatment history
-    activity_history = Diagnosis.objects.filter(user=request.user).order_by('-date').values(
-        'date', 'disease_detected', 'recommendation'
-    )[:10]  # Limit to last 10 entries
-
-    # Resources linked to the farmer's profile or general farming resources
     resources = Resource.objects.filter(user=request.user) | Resource.objects.filter(is_global=True)
 
-    # Create context with real data
+    # Create context with user data
     context = {
-        'user': request.user,
-        'total_diagnoses': total_diagnoses,
-        'successful_treatments': successful_treatments,
-        'farm_status': farm_status,
-        'activity_history': activity_history,
-        'resources': resources
+        "user": request.user,
+        "user_type": user_type,
+        "farm_status": user_data.get("farm_status", "Unknown"),
+        "total_diagnoses": user_data.get("total_diagnoses", 0),
+        "successful_treatments": user_data.get("successful_treatments", 0),
+        "activity_history": user_data.get("activity_history", []),
+        "resources": resources,
+        "products": user_data.get("products", []),  # Only applies for agrovets
     }
-    
+
     # Create PDF response
-    template_path = 'farmer_report_template.html'
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="farm_report.pdf"'
-    
+    template_path = "farmer_report_template.html" if user_type == "Farmer" else "agrovet_report_template.html"
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="farm_report.pdf"'
+
     template = get_template(template_path)
     html = template.render(context)
-    
-    # Generate PDF
+
     pisa_status = pisa.CreatePDF(html, dest=response)
-    
+
     if pisa_status.err:
-        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    
+        return HttpResponse("We had some errors <pre>" + html + "</pre>")
+
     return response
+
+
+
+
+@csrf_exempt
+def products_view(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            agrovet = Agrovet.objects.get(user=request.user)
+
+            product = Product.objects.create(
+                agrovet=agrovet,
+                name=data.get("name"),
+                description=data.get("description"),
+                price=data.get("price"),
+                stock_quantity=data.get("stock_quantity"),
+            )
+
+            return JsonResponse({"message": "Product added successfully!", "product_id": product.id}, status=201)
+
+        except Agrovet.DoesNotExist:
+            return JsonResponse({"error": "Agrovet not found for this user"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)

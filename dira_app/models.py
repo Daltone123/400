@@ -8,7 +8,7 @@ class Farmer(models.Model):
     last_name = models.CharField(max_length=100, blank=False, null=False)
     email = models.CharField(max_length=100, blank=False, null=False, unique=True)
     phone_number = models.CharField(max_length=100, blank=False, null=False, unique=True)
-    farm_location = models.JSONField()
+    farm_location = models.CharField(max_length=30, null=True, blank=True)
     farm_size = models.CharField(max_length=100, blank=False, null=False)
     type_of_crops = models.CharField(max_length=100, blank=False, null=False)
 
@@ -24,7 +24,7 @@ class Agrovet(models.Model):
     email = models.CharField(max_length=100, blank=False, null=False, unique=True)
     phone_number = models.CharField(max_length=100, blank=False, null=False, unique=True)
     agrovet_name = models.CharField(max_length=100, blank=False, null=False, unique=True)
-    agrovet_location = models.JSONField()
+    agrovet_location = models.CharField(max_length=30, null=True, blank=True)
     business_licence_number = models.CharField(max_length=100, blank=False, null=False, unique=True)
     
     def __str__(self):

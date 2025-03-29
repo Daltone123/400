@@ -131,7 +131,7 @@ def register_farmer(farmer_data={}):
       user=user,
       email=email,
       phone_number=phone_number,
-      farm_location={},
+      farm_location=location,
       farm_size=farm_size,
       type_of_crops=type_of_crops
     )
@@ -182,7 +182,7 @@ def register_agrovet(data={}):
       user=user,
       email=email,
       phone_number=phone_number,
-      agrovet_location={},
+      agrovet_location=location,
       agrovet_name=agrovet_name,
       business_licence_number=business_licence_number
     )
