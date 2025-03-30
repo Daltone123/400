@@ -298,6 +298,29 @@ def fastapi_proxy(request):
 
             print(f"Prediction: {predicted_class}, Confidence: {confidence:.2f}")
 
+            diagnosis= Diagnosis.objects.create(
+                user = request.user,
+                disease_detected = predicted_class,
+                recommendation = "Recommended treatment based on the prediction",
+                status = ""
+            )
+            diagnosis.save()
+            Treatment.objects.create(
+                user = request.user,
+                diagnosis = diagnosis,
+                status = "successful"  # e.g., 'successful', 'pending', 'failed'
+            )
+            Resource.objects.create(
+                title = "Resource Title",
+                link = "https://plantvillage.psu.edu/topics/potato/infos",
+                user = request.user,
+                is_global = False
+            )
+            # return {
+            #     "class": predicted_class,
+            #     "confidence": confidence
+            # }
+
             return JsonResponse({
                 "class": predicted_class,
                 "confidence": round((confidence*100), 1)
@@ -314,7 +337,7 @@ def fastapi_proxy(request):
 @csrf_exempt
 def predict_view(request):
     if request.method == "POST":
-        file = request.FILES.get("file")  # ✅ Get the uploaded file
+        file = request.FILES.get("file")  #Get the uploaded file
         if not file:
             return JsonResponse({"error": "No file uploaded"}, status=400)
 
@@ -339,9 +362,9 @@ def predict_view(request):
             return JsonResponse({"prediction": result})
 
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)  # ✅ Catch exceptions
+            return JsonResponse({"error": str(e)}, status=500) 
 
-    return JsonResponse({"error": "Invalid request method"}, status=405)  # ✅ Return proper status code
+    return JsonResponse({"error": "Invalid request method"}, status=405)  
 
 
 def logout_view(request):

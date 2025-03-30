@@ -16,20 +16,20 @@
 
     <div class="section">
         <h2>Farm Details</h2>
-        <p><strong>Location:</strong> {{ user_data.location }}</p>
-        <p><strong>Farm Status:</strong> {{ user_data.farm_status }}</p>
+        <p><strong>Location:</strong> {{ location }}</p>
+        <p><strong>Farm Status:</strong> {{ farm_status }}</p>
     </div>
 
     <div class="section">
         <h2>Recent Diagnoses</h2>
-        {% if user_data.activity_history %}
+        {% if activity_history %}
             <table>
                 <tr>
                     <th>Date</th>
                     <th>Diagnosis</th>
                     <th>Recommendation</th>
                 </tr>
-                {% for activity in user_data.activity_history %}
+                {% for activity in activity_history %}
                     <tr>
                         <td>{{ activity.date }}</td>
                         <td>{{ activity.diagnosis }}</td>

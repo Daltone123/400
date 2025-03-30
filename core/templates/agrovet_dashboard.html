@@ -72,7 +72,7 @@
         
 
             <div class="product-list">
-                {% for product in products %}
+                {% for product in user.products %}
                 <div class="product-item" data-id="{{ product.id }}">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.description }}</p>

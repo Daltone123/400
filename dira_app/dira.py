@@ -7,6 +7,7 @@ from PIL import Image, UnidentifiedImageError
 from dira_app.model_loader import MODEL, CLASS_NAMES
 import os
 import logging
+from .models import Diagnosis, Treatment, Resource, Farmer, Agrovet, Product
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -48,11 +49,7 @@ async def predict(file: UploadFile = File(...)):
         confidence = float(np.max(predictions[0]))
 
         logger.info(f"Prediction: {predicted_class}, Confidence: {confidence:.2f}")
-
-        return {
-            "class": predicted_class,
-            "confidence": confidence
-        }
+        
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}")
         raise HTTPException(status_code=500, detail="Prediction failed")

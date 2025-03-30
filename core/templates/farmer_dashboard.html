@@ -42,15 +42,15 @@
             <div class="insight-cards">
                 <div class="card">
                     <h3>Total Diagnoses</h3>
-                    <p>{{ total_diagnoses }}</p>
+                    <p>{{ user.total_diagnoses }}</p>
                 </div>
                 <div class="card">
                     <h3>Successful Treatments</h3>
-                    <p>{{ successful_treatments }}</p>
+                    <p>{{ user.total_diagnoses }}</p>
                 </div>
                 <div class="card">
                     <h3>Current Farm Status</h3>
-                    <p>{{ farm_status }}</p>
+                    <p>{{ user.farm_status }}</p>
                 </div>
             </div>
             <div class="chart-container">
@@ -61,7 +61,7 @@
         <section id="activity">
             <h2>Activity History</h2>
             <ul>
-                {% for activity in activity_history %}
+                {% for activity in user.activity_history %}
                 <li>
                     <span>{{ activity.date }}</span>
                     <p>{{ activity.diagnosis }} – {{ activity.recommendation }}</p>
@@ -82,7 +82,7 @@
             </ul>
         </section>
         <!-- Download report -->
-        <button onclick='window.location.href="{% url `download_repor` %}"'>
+        <button onclick='window.location.href="/download-report/"'>
             Download Report (PDF)
         </button>        
                
