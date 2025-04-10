@@ -1,0 +1,13 @@
+============================================================
+Dira Farm - AI-Powered Potato Disease Diagnosis System
+============================================================
+
+Dira Farm is an AI-powered web-based platform designed to assist small-scale potato farmers in Kenya with timely and accurate diagnosis of common potato diseases, specifically Early Blight and Late Blight. These diseases are major contributors to crop failure, yield reduction, and financial losses for farmers in the region.
+
+The system allows users to upload images of affected potato leaves through an intuitive web interface. A deep learning model, trained on a diverse dataset of potato leaf images, processes the uploaded images and provides instant disease classification and treatment recommendations. The system integrates both Django and FastAPI to handle web logic and machine learning inference, respectively, and stores user and disease data in a MySQL database.
+
+In addition to diagnosis, Dira Farm connects farmers to nearby agrovets, provides treatment advice, and offers educational resources to empower farmers with knowledge for better crop management.
+
+The platform is designed to be accessible, scalable, and impactful, contributing to sustainable agriculture, increased productivity, and improved livelihoods for rural farming communities.
+
+============================================================
